@@ -1,6 +1,6 @@
-import Database from 'better-sqlite3'
+import Database from "better-sqlite3";
 
-export const db = new Database('database.db')
+export const db = new Database("database.db");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -51,7 +51,6 @@ db.exec(`
     FOREIGN KEY (booking_id) REFERENCES bookings(id),
     FOREIGN KEY (room_id) REFERENCES rooms(id)
   );
-`)
+`);
 
-console.log('Tables created successfully')
-db.close()
+console.log("Tables created successfully");
