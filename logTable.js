@@ -15,3 +15,6 @@ console.log(tables);
 //Check individual table
 // const results = db.prepare(`SELECT * FROM ${table}`).all();
 // console.log(results);
+
+
+db.close();
