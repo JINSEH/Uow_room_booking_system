@@ -14,18 +14,56 @@ export const getBookings = (req, res) => {
 //Get a booking by ID
 export const getBookingById = (req, res) => {
   const { id } = req.params;
+
+  // Get booking details + all rooms in that booking
+  const rooms = db
+    .prepare(
+      `
+        SELECT r.id, r.name, r.price, r.date, r.start_time, r.end_time
+        FROM booking_rooms br
+        JOIN rooms r ON r.id = br.room_id
+        WHERE br.booking_id = ?
+    `,
+    )
+    .all(id);
+
   const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
-  if (booking) {
-    res.json(booking);
-  } else {
-    res.status(404).json({ error: "Booking not found" });
-  }
+
+  res.json({ ...booking, rooms });
 };
 
 //Create a new booking
 export const createBooking = (req, res) => {
-  const { room_ids, promo_code_id, total_price } = req.body;
+  const { room_ids, promo_code } = req.body;
   const student_id = req.session.userId; // trusted, comes from session
+
+  // 1. Calculate base total price from selected rooms
+  let total_price = 0;
+  for (const roomId of room_ids) {
+    const room = db.prepare("SELECT price FROM rooms WHERE id = ?").get(roomId);
+    total_price += room.price;
+  }
+
+  // 2. Check if promo code was provided and apply discount
+  let promo_code_id = null;
+  if (promo_code) {
+    const promo = db
+      .prepare("SELECT * FROM promo_codes WHERE code = ?")
+      .get(promo_code);
+
+    if (!promo) {
+      return res.status(400).json({ error: "Invalid promo code" });
+    }
+
+    // Apply discount
+    if (promo.discount_type === "flat") {
+      total_price -= promo.discount_value; // e.g. $10 off
+    } else if (promo.discount_type === "percent") {
+      total_price -= total_price * (promo.discount_value / 100); // e.g. 10% off
+    }
+
+    promo_code_id = promo.id;
+  }
 
   const booking = db
     .prepare(
@@ -46,20 +84,68 @@ export const createBooking = (req, res) => {
   res.status(201).json({ message: "Booking created", bookingId });
 };
 
-//Update a booking
+//Update a booking (needs tweaking)
 export const updateBooking = (req, res) => {
   const { id } = req.params;
-  const { user_id, room_id, start_time, end_time } = req.body;
+  const { room_ids, promo_code } = req.body;
+  const student_id = req.session.userId;
+
+  // Check if booking exists and belongs to this student
   const booking = db
-    .prepare(
-      "UPDATE bookings SET user_id = ?, room_id = ?, start_time = ?, end_time = ? WHERE id = ?",
-    )
-    .run(user_id, room_id, start_time, end_time, id);
-  if (booking) {
-    res.json(booking);
-  } else {
-    res.status(404).json({ error: "Booking not found" });
+    .prepare("SELECT * FROM bookings WHERE id = ? AND student_id = ?")
+    .get(id, student_id);
+
+  if (!booking) {
+    return res.status(404).json({ error: "Booking not found" });
   }
+
+  // calculate total price
+  let total_price = 0;
+  for (const roomId of room_ids) {
+    const room = db.prepare("SELECT price FROM rooms WHERE id = ?").get(roomId);
+    total_price += room.price;
+  }
+
+  //Calculate total price if another promo code was added or removed
+  let promo_code_id = null;
+  if (promo_code) {
+    const promo = db
+      .prepare("SELECT * FROM promo_codes WHERE code = ?")
+      .get(promo_code);
+
+    if (!promo) {
+      return res.status(400).json({ error: "Invalid promo code" });
+    }
+
+    // Apply discount
+    if (promo.discount_type === "flat") {
+      total_price -= promo.discount_value; // e.g. $10 off
+    } else if (promo.discount_type === "percent") {
+      total_price -= total_price * (promo.discount_value / 100); // e.g. 10% off
+    }
+
+    promo_code_id = promo.id;
+  }
+
+  //Update the whole booking
+  db.prepare(
+    "UPDATE bookings SET total_price = ? AND promo_code_id WHERE id = ?",
+  ).run(total_price, promo_code_id, id);
+
+  //Change booking_rooms
+  if (room_ids) {
+    // Delete old rooms and insert new ones
+    db.prepare("DELETE FROM booking_rooms WHERE booking_id = ?").run(id);
+
+    const insertRoom = db.prepare(
+      "INSERT INTO booking_rooms (booking_id, room_id) VALUES (?, ?)",
+    );
+    for (const roomId of room_ids) {
+      insertRoom.run(id, roomId);
+    }
+  }
+
+  res.json({ message: "Booking updated successfully" });
 };
 
 //Delete a booking
