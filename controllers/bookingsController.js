@@ -1,4 +1,4 @@
-import { db } from "../createTable";
+import { db } from "../createTable.js";
 
 //API endpoints for booking related operations
 

@@ -1,7 +1,7 @@
 import express from "express";
-import { authRouter } from "./routers/auth";
-import { bookingRouter } from "./routers/bookings";
-import { roomsRouter } from "./routers/rooms";
+import { authRouter } from "./routers/auth.js";
+import { bookingRouter } from "./routers/bookings.js";
+import { roomsRouter } from "./routers/rooms.js";
 const app = express();
 const PORT = 3000;
 

@@ -5,9 +5,9 @@ import {
   createRoom,
   updateRoom,
   deleteRoom,
-} from "../controllers/roomsController";
+} from "../controllers/roomsController.js";
 
-const roomsRouter = express.Router();
+export const roomsRouter = express.Router();
 
 roomsRouter.get("/", getRooms);
 roomsRouter.get("/:roomId", getRoomById);

@@ -4,7 +4,7 @@ import {
   createBooking,
   updateBooking,
   deleteBooking,
-} from "../controllers/bookingsController";
+} from "../controllers/bookingsController.js";
 import express from "express";
 
 export const bookingRouter = express.Router();
