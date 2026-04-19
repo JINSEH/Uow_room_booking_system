@@ -2,9 +2,9 @@ import Database from "better-sqlite3";
 
 const db = new Database('database.db');
 
-const table = 'users';
+// const table = 'users';
 // const table = 'rooms';
-// const table = 'promo_codes';
+const table = 'promo_codes';
 // const table = 'bookings';
 // const table = 'bookings_rooms';
 

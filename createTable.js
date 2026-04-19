@@ -54,14 +54,12 @@ export const db = new Database("database.db");
 // `);
 
 db.exec(`
-  DROP TABLE IF EXISTS promo_codes;
+  INSERT INTO promo_codes (code, discount_type, discount_value) VALUES
+  ('SAVE10', 'flat', 10.00),
+  ('SAVE20', 'flat', 20.00),
+  ('HALFOFF', 'percent', 50.00),
+  ('STUDENT10', 'percent', 10.00),
+  ('WELCOME5', 'flat', 5.00);
+`)
 
-  CREATE TABLE IF NOT EXISTS promo_codes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      code TEXT UNIQUE NOT NULL,
-      discount_type TEXT CHECK(discount_type IN ('flat', 'percent')) NOT NULL,
-      discount_value REAL NOT NULL
-  );
-`);
-
-console.log("Promo table altered Successfully");
+console.log("Sample data inserted successfully");
