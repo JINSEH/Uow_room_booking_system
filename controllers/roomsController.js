@@ -9,44 +9,42 @@ export const getRooms = (req, res) => {
 };
 
 
-//Get rooms that are already launched
+//Get rooms that are already launched and not booked
 export const getLaunchedRooms = (req, res) => {
   const { name, min_price, max_price, capacity, date } = req.query
 
-    let query = `SELECT * FROM rooms WHERE status = ? AND id NOT IN (
-        SELECT br.room_id FROM booking_rooms br
-        JOIN bookings b ON b.id = br.booking_id
-        WHERE b.status = 'active'
-    )`
-    const params = ["launched"]
+  let query = `SELECT * FROM rooms WHERE status = ? AND id NOT IN (
+      SELECT room_id FROM bookings WHERE status = 'active'
+  )`
+  const params = ["launched"]
 
-    if (name) {
-        query += ' AND name LIKE ?'
-        params.push(`%${name}%`)
-    }
+  if (name) {
+      query += ' AND name LIKE ?'
+      params.push(`%${name}%`)
+  }
 
-    if (min_price) {
-        query += ' AND price >= ?'
-        params.push(min_price)
-    }
+  if (min_price) {
+      query += ' AND price >= ?'
+      params.push(min_price)
+  }
 
-    if (max_price) {
-        query += ' AND price <= ?'
-        params.push(max_price)
-    }
+  if (max_price) {
+      query += ' AND price <= ?'
+      params.push(max_price)
+  }
 
-    if (capacity) {
-        query += ' AND capacity >= ?'
-        params.push(capacity)
-    }
+  if (capacity) {
+      query += ' AND capacity >= ?'
+      params.push(capacity)
+  }
 
-    if (date) {
-        query += ' AND date = ?'
-        params.push(date)
-    }
+  if (date) {
+      query += ' AND date = ?'
+      params.push(date)
+  }
 
-    const rooms = db.prepare(query).all(params)
-    res.json(rooms)
+  const rooms = db.prepare(query).all(params)
+  res.json(rooms)
 }
 
 //Get rooms that are drafted
