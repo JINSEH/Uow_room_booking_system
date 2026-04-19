@@ -94,8 +94,8 @@ export const updateBooking = (req, res) => {
 
   // Remove promo code, need to add this option to frontend
   if (remove_promo) {
-      db.prepare('UPDATE bookings SET promo_code_id = NULL, total_price = ? WHERE id = ?')
-          .run(total_price, bookingId)
+      db.prepare('UPDATE bookings SET promo_code_id = ?, total_price = ? WHERE id = ?')
+          .run(NULL, total_price, bookingId)
       return res.json({ message: 'Promo code removed', total_price })
   }
 
@@ -139,7 +139,7 @@ export const cancelBooking = (req, res) => {
       return res.status(400).json({ error: 'Booking is already cancelled' })
   }
 
-  db.prepare('UPDATE bookings SET status = "cancelled" WHERE id = ?').run(bookingId)
+  db.prepare('UPDATE bookings SET status = ? WHERE id = ? AND student_id = ?').run('cancelled',bookingId, student_id)
 
   res.json({ message: 'Booking cancelled successfully' })
 }
