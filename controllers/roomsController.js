@@ -11,13 +11,43 @@ export const getRooms = (req, res) => {
 
 //Get rooms that are already launched
 export const getLaunchedRooms = (req, res) => {
-  const rooms = db.prepare(`SELECT * FROM rooms WHERE status=?`).all('launched')
-  res.json(rooms)
+  const { name, min_price, max_price, capacity, date } = req.query
+
+    let query = `SELECT * FROM rooms WHERE status = ?`
+    const params = ["launched"]
+
+    if (name) {
+        query += ' AND name LIKE ?'
+        params.push(`%${name}%`)
+    }
+
+    if (min_price) {
+        query += ' AND price >= ?'
+        params.push(min_price)
+    }
+
+    if (max_price) {
+        query += ' AND price <= ?'
+        params.push(max_price)
+    }
+
+    if (capacity) {
+        query += ' AND capacity >= ?'
+        params.push(capacity)
+    }
+
+    if (date) {
+        query += ' AND date = ?'
+        params.push(date)
+    }
+
+    const rooms = db.prepare(query).all(params)
+    res.json(rooms)
 }
 
 //Get rooms that are drafted
 export const getDraftedRooms = (req, res) => {
-  const rooms = db.prepare(`SELECT * FROM rooms WHERE status=?`).all('draft')
+  const rooms = db.prepare(`SELECT * FROM rooms WHERE status=?`).all("draft")
   res.json(rooms)
 }
 

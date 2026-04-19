@@ -13,8 +13,8 @@ import { authenticateToken, requireStaff } from "../middleware/auth.js";
 export const roomsRouter = express.Router();
 
 roomsRouter.get("/", authenticateToken, requireStaff, getRooms);
-roomsRouter.get("/draft", authenticateToken, requireStaff, getDraftedRooms);
 roomsRouter.get("/launched", getLaunchedRooms);
+roomsRouter.get("/draft", authenticateToken, requireStaff, getDraftedRooms);
 roomsRouter.get("/:roomId", getRoomById);
 roomsRouter.post("/create-room", authenticateToken, requireStaff, createRoom);
 roomsRouter.put("/update-room/:roomId", authenticateToken, requireStaff, updateRoom);
