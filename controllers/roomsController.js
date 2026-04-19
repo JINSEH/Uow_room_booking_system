@@ -13,7 +13,11 @@ export const getRooms = (req, res) => {
 export const getLaunchedRooms = (req, res) => {
   const { name, min_price, max_price, capacity, date } = req.query
 
-    let query = `SELECT * FROM rooms WHERE status = ?`
+    let query = `SELECT * FROM rooms WHERE status = ? AND id NOT IN (
+        SELECT br.room_id FROM booking_rooms br
+        JOIN bookings b ON b.id = br.booking_id
+        WHERE b.status = 'active'
+    )`
     const params = ["launched"]
 
     if (name) {

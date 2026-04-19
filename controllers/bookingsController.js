@@ -13,7 +13,7 @@ export const getBookings = (req, res) => {
 
 //Get a booking by ID
 export const getBookingById = (req, res) => {
-  const { id } = req.params;
+  const { bookingId } = req.params;
 
   // Get booking details + all rooms in that booking
   const rooms = db
@@ -25,9 +25,9 @@ export const getBookingById = (req, res) => {
         WHERE br.booking_id = ?
     `,
     )
-    .all(id);
+    .all(bookingId);
 
-  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(bookingId);
 
   res.json({ ...booking, rooms });
 };
