@@ -62,4 +62,4 @@ export const db = new Database("database.db");
 //   ('WELCOME5', 'flat', 5.00);
 // `)
 
-console.log("Sample data inserted successfully");
+// console.log("Sample data inserted successfully");

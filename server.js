@@ -1,5 +1,5 @@
 import express from "express";
-import { authRouter } from "./routers/auth.js";
+import { authRouter } from "./routers/authRouter.js";
 import { bookingRouter } from "./routers/bookings.js";
 import { roomsRouter } from "./routers/rooms.js";
 import { promoCodesRouter } from "./routers/promoCodes.js";

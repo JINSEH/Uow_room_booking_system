@@ -4,7 +4,7 @@ import { db } from "../createTable.js";
 
 //Get all bookings
 export const getBookings = (req, res) => {
-  const student_id = req.session.userId;
+  const student_id = req.user.id;
   const bookings = db
     .prepare("SELECT * FROM bookings WHERE student_id=?")
     .all(student_id);
@@ -35,7 +35,7 @@ export const getBookingById = (req, res) => {
 //Create a new booking
 export const createBooking = (req, res) => {
   const { room_ids, promo_code } = req.body;
-  const student_id = req.session.userId; // trusted, comes from session
+  const student_id = req.user.id;
 
   // 1. Calculate base total price from selected rooms
   let total_price = 0;
@@ -88,7 +88,7 @@ export const createBooking = (req, res) => {
 export const updateBooking = (req, res) => {
   const { id } = req.params;
   const { room_ids, promo_code } = req.body;
-  const student_id = req.session.userId;
+  const student_id = req.user.id;
 
   // Check if booking exists and belongs to this student
   const booking = db
