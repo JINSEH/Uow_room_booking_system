@@ -147,6 +147,7 @@
 
         <label for="login-password">Password:</label>
         <input id="login-password" type="password" name="password" required>
+        <p id="login-error" class="modal-inline-error" aria-live="polite"></p>
 
         <button type="submit" class="modal-submit">Login</button>
       </form>
@@ -164,11 +165,38 @@
       <h2 id="register-modal-title">Register</h2>
 
       <form class="modal-form" action="#" method="post">
+        <label for="register-name">Name:</label>
+        <input id="register-name" type="text" name="name" required>
+
         <label for="register-email">Email:</label>
         <input id="register-email" type="email" name="email" required>
 
         <label for="register-password">Password:</label>
         <input id="register-password" type="password" name="password" required>
+
+        <p class="modal-role-label">Role:</p>
+        <div class="role-options">
+          <label class="role-option" for="register-role-staff">
+            <input
+              id="register-role-staff"
+              type="checkbox"
+              value="staff"
+              data-role-checkbox
+            >
+            Staff
+          </label>
+          <label class="role-option" for="register-role-student">
+            <input
+              id="register-role-student"
+              type="checkbox"
+              value="student"
+              data-role-checkbox
+            >
+            Student
+          </label>
+        </div>
+        <input id="register-role" type="hidden" name="role" required>
+        <p id="register-role-error" class="modal-inline-error" aria-live="polite"></p>
 
         <button type="submit" class="modal-submit">Register</button>
       </form>

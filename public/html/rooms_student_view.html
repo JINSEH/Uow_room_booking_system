@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Rooms View</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/rooms_student_view.css">
+</head>
+<body>
+  <div class="student-layout">
+    <aside class="sidebar" aria-label="Student navigation">
+      <img class="sidebar-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item is-active">Home</a>
+        <a href="#" class="nav-item">Bookings</a>
+        <a href="#" class="nav-item">Profile</a>
+      </nav>
+      <button id="logout-button" class="logout-button" type="button">Logout</button>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <h1 id="welcome-message">Welcome to the UOW Room Booking System!</h1>
+      </header>
+
+      <section class="rooms-section" aria-labelledby="rooms-title">
+        <div class="rooms-heading-row">
+          <h2 id="rooms-title">Types of Rooms</h2>
+          <div class="carousel-controls">
+            <button id="rooms-prev" type="button" class="carousel-button" aria-label="Show previous rooms">◀</button>
+            <button id="rooms-next" type="button" class="carousel-button" aria-label="Show next rooms">▶</button>
+          </div>
+        </div>
+
+        <p id="rooms-status" class="rooms-status" aria-live="polite">Loading available rooms...</p>
+
+        <div id="rooms-carousel" class="rooms-carousel" role="list" aria-label="Available room cards">
+          <!-- Room cards are rendered by JavaScript -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/rooms_student_view.js"></script>
+</body>
+</html>

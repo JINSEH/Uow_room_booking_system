@@ -1,5 +1,6 @@
 import express from "express";
 import path from 'node:path';
+import { fileURLToPath } from "node:url";
 import { authRouter } from "./routers/authRouter.js";
 import { bookingRouter } from "./routers/bookings.js";
 import { roomsRouter } from "./routers/rooms.js";
@@ -7,10 +8,11 @@ import { promoCodesRouter } from "./routers/promoCodes.js";
 
 const app = express();
 const PORT = 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 app.use(express.json());
-//Below code will serve static files once ready.
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/api/auth", authRouter);
 app.use("/api/booking", bookingRouter);

@@ -8,3 +8,4 @@ promoCodesRouter.get("/:promoCodeId", authenticateToken, requireStaff,getPromoCo
 promoCodesRouter.post("/create-promo-code", authenticateToken, requireStaff, createPromoCode);
 promoCodesRouter.put("/update-promo-code/:promoCodeId", authenticateToken, requireStaff, updatePromoCode);
 promoCodesRouter.delete("/delete-promo-code/:promoCodeId", authenticateToken, requireStaff,deletePromoCode);
+

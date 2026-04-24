@@ -113,3 +113,25 @@ for (const room of rooms) {
 }
 
 console.log('Rooms seeded successfully')
+
+const seedRoomsStatement = db.prepare(`
+    INSERT OR IGNORE INTO rooms (name, capacity, price, status, created_by)
+    VALUES (?, ?, ?, ?, ?);
+  `);
+  
+  const seedRooms = [
+    ["Grand Hall", 300, 500, "launched", 1],
+    ["Lecture Theatre", 180, 50, "launched", 1],
+    ["Performing Arts", 120, 200, "launched", 1],
+    ["Seminar Room", 60, 100, "launched", 1],
+    ["Discussion Room", 20, 20, "launched", 1],
+    ["Dance Studio", 80, 50, "launched", 1],
+  ];
+  
+  const insertManyRooms = db.transaction((rooms) => {
+    for (const room of rooms) {
+      seedRoomsStatement.run(...room);
+    }
+  });
+  
+  insertManyRooms(seedRooms);

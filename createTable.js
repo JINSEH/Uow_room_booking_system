@@ -33,41 +33,20 @@ export const db = new Database("database.db");
 //     FOREIGN KEY (room_id) REFERENCES rooms(id)
 //   );
 
-//   CREATE TABLE IF NOT EXISTS bookings (
+// CREATE TABLE IF NOT EXISTS bookings (
 //     id INTEGER PRIMARY KEY AUTOINCREMENT,
 //     student_id INTEGER NOT NULL,
+//     room_id INTEGER NOT NULL,
 //     promo_code_id INTEGER,
 //     total_price REAL NOT NULL,
 //     status TEXT CHECK(status IN ('active', 'cancelled')) DEFAULT 'active',
 //     created_at TEXT DEFAULT (datetime('now')),
 //     FOREIGN KEY (student_id) REFERENCES users(id),
+//     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
 //     FOREIGN KEY (promo_code_id) REFERENCES promo_codes(id)
-//   );
+//  );
+//`);
 
-//   CREATE TABLE IF NOT EXISTS booking_rooms (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     booking_id INTEGER NOT NULL,
-//     room_id INTEGER NOT NULL,
-//     FOREIGN KEY (booking_id) REFERENCES bookings(id),
-//     FOREIGN KEY (room_id) REFERENCES rooms(id)
-//   );
-// `);
 
-// db.exec(`
-//   DROP TABLE IF EXISTS bookings;
-//   DROP TABLE IF EXISTS booking_rooms;
-
-//   CREATE TABLE IF NOT EXISTS bookings (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       student_id INTEGER NOT NULL,
-//       room_id INTEGER NOT NULL,
-//       promo_code_id INTEGER,
-//       total_price REAL NOT NULL,
-//       status TEXT CHECK(status IN ('active', 'cancelled')) DEFAULT 'active',
-//       created_at TEXT DEFAULT (datetime('now')),
-//       FOREIGN KEY (student_id) REFERENCES users(id),
-//       FOREIGN KEY (room_id) REFERENCES rooms(id),
-//       FOREIGN KEY (promo_code_id) REFERENCES promo_codes(id)
-//   );
-// `)
+// db.prepare('DELETE FROM rooms;').run()
 // console.log("Table dropped successfully and new table created successfully");
