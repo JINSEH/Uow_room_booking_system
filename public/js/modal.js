@@ -64,6 +64,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+//Login functionality
 if (loginForm) {
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
