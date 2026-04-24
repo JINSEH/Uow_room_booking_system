@@ -199,6 +199,110 @@
     padding: 2.5rem 1rem;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
+.login-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 320ms ease, visibility 0s linear 320ms;
+}
+
+.login-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 320ms ease, visibility 0s linear 0s;
+}
+
+.login-modal-card {
+    width: min(320px, 92vw);
+    background-color: #e8e1d5;
+    border-radius: 12px;
+    padding: 1rem 1.15rem 1.35rem;
+    position: relative;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px) scale(0.98);
+    transition: transform 320ms ease;
+}
+
+.login-modal.is-open .login-modal-card {
+    transform: translateY(0) scale(1);
+}
+
+.modal-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.65rem;
+    border: 0;
+    background: transparent;
+    color: #5a4e43;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-logo {
+    display: block;
+    margin: 0 auto 0.45rem;
+    width: 120px;
+    height: auto;
+}
+
+.login-modal-card h2 {
+    margin: 0 0 0.9rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.modal-form {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.modal-form label {
+    font-size: 1.02rem;
+    text-transform: uppercase;
+}
+
+.modal-form input {
+    width: 100%;
+    border: 1px solid #d2c7b6;
+    background-color: #fff;
+    padding: 0.6rem 0.7rem;
+    font-size: 1rem;
+}
+
+.modal-submit {
+    margin-top: 0.8rem;
+    border: 0;
+    background-color: #c79369;
+    color: #121212;
+    font-size: 2rem;
+    border-radius: 2px;
+    padding: 0.28em 0.6em;
+    cursor: pointer;
+}
+
+.modal-helper-text {
+    margin: 0.95rem 0 0;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.modal-helper-text a {
+    color: #b26f45;
+}
+
 .footer-content {
     width: min(1100px, 100%);
     margin: 0 auto;
@@ -299,6 +403,14 @@
     .footer-content {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.9rem;
+    }
+
+    .login-modal-card {
+        width: min(300px, 94vw);
+    }
+
+    .modal-submit {
+        font-size: 1.8rem;
     }
 
     .site-footer {

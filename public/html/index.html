@@ -92,8 +92,8 @@
       <div class="login-overlay">
         <h2>Login as?</h2>
         <div class="login-actions">
-          <a href="#" class="login-button">Staff</a>
-          <a href="#" class="login-button">Student</a>
+          <a href="#" class="login-button" data-open-login>Staff</a>
+          <a href="#" class="login-button" data-open-login>Student</a>
         </div>
       </div>
     </section>
@@ -133,5 +133,49 @@
       </section>
     </div>
   </footer>
+
+  <!-- Modal for login -->
+  <div id="login-modal" class="login-modal" aria-hidden="true">
+    <div class="login-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button type="button" class="modal-close" data-close-modal aria-label="Close login form">&times;</button>
+      <img class="modal-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <h2 id="modal-title">Login</h2>
+
+      <form class="modal-form" action="#" method="post">
+        <label for="login-email">Email:</label>
+        <input id="login-email" type="email" name="email" required>
+
+        <label for="login-password">Password:</label>
+        <input id="login-password" type="password" name="password" required>
+
+        <button type="submit" class="modal-submit">Login</button>
+      </form>
+
+      <p class="modal-helper-text">Forgot <a href="#">password</a>?</p>
+      <p class="modal-helper-text">Don't have an account? <a href="#" data-open-register>Register</a></p>
+    </div>
+  </div>
+
+  <!-- Modal for register -->
+  <div id="register-modal" class="login-modal" aria-hidden="true">
+    <div class="login-modal-card" role="dialog" aria-modal="true" aria-labelledby="register-modal-title">
+      <button type="button" class="modal-close" data-close-modal aria-label="Close register form">&times;</button>
+      <img class="modal-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <h2 id="register-modal-title">Register</h2>
+
+      <form class="modal-form" action="#" method="post">
+        <label for="register-email">Email:</label>
+        <input id="register-email" type="email" name="email" required>
+
+        <label for="register-password">Password:</label>
+        <input id="register-password" type="password" name="password" required>
+
+        <button type="submit" class="modal-submit">Register</button>
+      </form>
+
+      <p class="modal-helper-text">Already have an account? <a href="#" data-open-login>Login</a></p>
+    </div>
+  </div>
+  <script src="../js/modal.js"></script>
 </body>
 </html>

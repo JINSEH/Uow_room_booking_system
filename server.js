@@ -8,6 +8,7 @@ import { promoCodesRouter } from "./routers/promoCodes.js";
 const app = express();
 const PORT = 3000;
 
+app.use(express.static('public'));
 app.use(express.json());
 //Below code will serve static files once ready.
 // app.use(express.static(path.join(__dirname, 'public')));
