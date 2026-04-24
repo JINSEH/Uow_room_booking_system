@@ -4,6 +4,7 @@ const welcomeMessage = document.getElementById("welcome-message");
 const prevButton = document.getElementById("rooms-prev");
 const nextButton = document.getElementById("rooms-next");
 const logoutButton = document.getElementById("logout-button");
+let carouselPageIndex = 0;
 
 const roomImageMap = {
   "Grand Hall": "../images/index/grand-hall.png",
@@ -14,13 +15,14 @@ const roomImageMap = {
   "Dance Studio": "../images/index/dance-studio.png",
 };
 
-// Only show five room types in the student carousel.
+// Only show selected room types in the student carousel.
 const preferredRoomTypes = [
   "Grand Hall",
   "Lecture Theatre",
   "Performing Arts",
   "Seminar Room",
   "Dance Studio",
+  "Discussion Room",
 ];
 
 const roomDetailsMap = {
@@ -95,18 +97,73 @@ function updateWelcomeText() {
   welcomeMessage.textContent = `Welcome to the UOW Room Booking System, ${roleLabel}!`;
 }
 
+function getVisibleCardsPerPage() {
+  if (window.matchMedia("(max-width: 760px)").matches) return 1;
+  if (window.matchMedia("(max-width: 1080px)").matches) return 2;
+  return 3;
+}
+
+function getRoomCards() {
+  return Array.from(document.querySelectorAll(".room-card"));
+}
+
+function clampPageIndex(index, maxPageIndex) {
+  return Math.min(Math.max(index, 0), Math.max(maxPageIndex, 0));
+}
+
+function getMaxPageIndex(roomsCount, visibleCardsPerPage) {
+  return Math.ceil(roomsCount / visibleCardsPerPage) - 1;
+}
+
+function scrollToPageIndex(pageIndex) {
+  const roomCards = getRoomCards();
+  if (!roomCards.length || !roomsCarousel) return;
+
+  const visibleCardsPerPage = getVisibleCardsPerPage();
+  const maxPageIndex = getMaxPageIndex(roomCards.length, visibleCardsPerPage);
+  const clampedPageIndex = clampPageIndex(pageIndex, maxPageIndex);
+  const targetCardIndex = clampedPageIndex * visibleCardsPerPage;
+  const targetCard = roomCards[targetCardIndex] || roomCards[roomCards.length - 1];
+  carouselPageIndex = clampedPageIndex;
+
+  roomsCarousel.scrollTo({
+    left: targetCard.offsetLeft,
+    behavior: "smooth",
+  });
+}
+
+function updateStartIndexFromScrollPosition() {
+  const roomCards = getRoomCards();
+  if (!roomCards.length || !roomsCarousel) return;
+
+  let closestIndex = 0;
+  let smallestDistance = Number.POSITIVE_INFINITY;
+
+  roomCards.forEach((card, index) => {
+    const distance = Math.abs(card.offsetLeft - roomsCarousel.scrollLeft);
+    if (distance < smallestDistance) {
+      smallestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  const visibleCardsPerPage = getVisibleCardsPerPage();
+  carouselPageIndex = Math.floor(closestIndex / visibleCardsPerPage);
+}
+
 function attachCarouselControls() {
   if (!roomsCarousel || !prevButton || !nextButton) return;
 
-  const getScrollAmount = () => Math.max(roomsCarousel.clientWidth * 0.8, 260);
-
   prevButton.addEventListener("click", () => {
-    roomsCarousel.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
+    scrollToPageIndex(carouselPageIndex - 1);
   });
 
   nextButton.addEventListener("click", () => {
-    roomsCarousel.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
+    scrollToPageIndex(carouselPageIndex + 1);
   });
+
+  roomsCarousel.addEventListener("scroll", updateStartIndexFromScrollPosition);
+  window.addEventListener("resize", updateStartIndexFromScrollPosition);
 }
 
 async function loadRooms() {
@@ -149,6 +206,7 @@ async function loadRooms() {
     selectedRooms.forEach((room) => {
       roomsCarousel.appendChild(createRoomCard(room));
     });
+    carouselPageIndex = 0;
 
     roomsStatus.textContent = `${selectedRooms.length} room type(s) available. Scroll to view more.`;
   } catch (error) {
