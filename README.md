@@ -1,34 +1,56 @@
 # UOW Room Booking System
 
-Backend API for a university room booking system: staff manage rooms and promo codes; students browse launched rooms and manage their bookings. Built for coursework (CSIT 214 IT Project Management).
+Full-stack university room booking system for CSIT 214.  
+The same Express app serves both:
+
+- frontend pages from `public/`
+- backend APIs from `routers/` and `controllers/`
+
+Students can browse and book rooms. Staff can create, update, delete, reserve rooms, and upload room images.
 
 ## Tech stack
 
-- **Node.js** with **ES modules** (`"type": "module"` in `package.json`)
-- **Express 5** — HTTP API
-- **better-sqlite3** — SQLite database (`database.db` in the project root)
-- **bcrypt** — password hashing
-- **jsonwebtoken** — login tokens for protected routes
+- Node.js (ES modules)
+- Express 5
+- SQLite (`better-sqlite3`)
+- JWT auth (`jsonwebtoken`)
+- Password hashing (`bcrypt`)
+- File uploads (`multer`)
+- Environment variables (`dotenv`)
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS recommended, e.g. v18 or newer)
+- Node.js 18+ (Node 22 recommended)
 
-## Getting started
+## Local setup
 
-### 1. Install dependencies
+### 1) Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Database
+### 2) Configure environment
 
-The app uses `database.db` via `createTable.js`. If you are setting up from scratch, you need the SQLite tables (`users`, `rooms`, `bookings`, `promo_codes`, etc.) to exist. Example `CREATE TABLE` statements are in comments inside `createTable.js`; you can uncomment and run them once (e.g. with a small script that imports `db` and runs `db.exec(...)`), or restore a `database.db` file your team already prepared.
+Copy example config:
 
-### 3. (Optional) Seed test data
+```bash
+cp .env.example .env
+```
 
-Scripts under `test_data/` insert sample users, rooms, bookings, and promo codes. Run from the project root (order may matter if foreign keys reference other rows):
+Then update `.env`:
+
+```env
+PORT=3000
+JWT_SECRET=your-very-long-random-secret
+```
+
+### 3) Database and schema
+
+Database file: `database.db` (project root).  
+Schema migrations for room columns (`description`, `location`, `image`) are handled in `createTable.js`.
+
+### 4) (Optional) Seed test data
 
 ```bash
 node test_data/seedUsers.js
@@ -37,85 +59,92 @@ node test_data/seedPromoCodes.js
 node test_data/seedBookings.js
 ```
 
-Example seeded logins (see `test_data/seedUsers.js`): staff `terence@uow.edu.au`, student `edwin@uow.edu.au`, password `password123`.
-
-### 4. Run the server
+### 5) Run app
 
 ```bash
 npm start
 ```
 
-For auto-restart on file changes during development:
+Development mode:
 
 ```bash
 npx nodemon server.js
 ```
 
-Default URL: **http://localhost:3000** (port is set in `server.js`).
+Open: [http://localhost:3000](http://localhost:3000)
 
-## Postman collection
+## Core pages
 
-Ready-made requests for every endpoint live in this Postman collection (headers, bodies, and folders as you set them up):
+- Student rooms: `/html/rooms_student_view.html`
+- Staff rooms: `/html/rooms_staff_view.html`
+- Staff create room: `/html/create_room_staff.html`
 
-[UOW Room Booking — Postman collection](https://web.postman.co/workspace/My-Workspace~27a9518d-c4f5-4902-8078-2c1e206498c7/collection/43814840-3840b6cb-0145-49b4-a262-58ff835b5142?action=share&source=copy-link&creator=43814840)
+## Health check
 
-You usually need to be **signed in to Postman** for workspace links to open.
+- `GET /health`  
+Returns service status JSON.
 
 ## Authentication
 
-1. **Register** or **login** (see routes below).
-2. For protected routes, send the JWT in the header:
+Use login/register endpoints, then pass token:
 
-   `Authorization: Bearer <your_token_here>`
+`Authorization: Bearer <token>`
 
-Tokens are issued on login and include `id` and `role` (`staff` or `student`). Middleware enforces **staff-only** vs **student-only** routes.
+Token payload includes:
 
-> **Learning note:** The JWT signing secret is currently a fixed string in the code (`'secret'`). For a real production app you would read a strong secret from an environment variable and never commit it.
+- `id` / `userId`
+- `role` (`student` or `staff`)
 
-## API overview
+## API quick overview
 
-Base path: `http://localhost:3000`
+### Auth
 
-| Area | Method | Path | Access |
-|------|--------|------|--------|
-| Health | GET | `/` | Public |
-| **Auth** | POST | `/api/auth/registerUser` | Public |
-| | POST | `/api/auth/login` | Public |
-| | GET | `/api/auth/logout` | Public (client discards token) |
-| | GET | `/api/auth/all-users` | Staff + token |
-| **Rooms** | GET | `/api/rooms/` | Staff + token |
-| | GET | `/api/rooms/launched` | Public |
-| | GET | `/api/rooms/draft` | Staff + token |
-| | GET | `/api/rooms/:roomId` | Public |
-| | POST | `/api/rooms/create-room` | Staff + token |
-| | PUT | `/api/rooms/update-room/:roomId` | Staff + token |
-| | DELETE | `/api/rooms/delete-room/:roomId` | Staff + token |
-| **Bookings** | GET | `/api/booking/` | Student + token |
-| | GET | `/api/booking/:bookingId` | Student + token |
-| | POST | `/api/booking/create-booking` | Student + token |
-| | PUT | `/api/booking/update-booking/:bookingId` | Student + token |
-| | PUT | `/api/booking/cancel-booking/:bookingId` | Student + token |
-| **Promo codes** | GET | `/api/promo-codes/` | Staff + token |
-| | GET | `/api/promo-codes/:promoCodeId` | Staff + token |
-| | POST | `/api/promo-codes/create-promo-code` | Staff + token |
-| | PUT | `/api/promo-codes/update-promo-code/:promoCodeId` | Staff + token |
-| | DELETE | `/api/promo-codes/delete-promo-code/:promoCodeId` | Staff + token |
+- `POST /api/auth/registerUser`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `GET /api/auth/all-users` (staff)
 
-Request bodies for register/login and CRUD operations match the fields used in the controllers (e.g. register: `name`, `email`, `password`, `role`).
+### Rooms
 
-## Project layout (high level)
+- `GET /api/rooms/launched` (public)
+- `GET /api/rooms/draft` (staff)
+- `POST /api/rooms/upload-image` (staff, multipart form-data `image`)
+- `POST /api/rooms/create-room` (staff)
+- `PUT /api/rooms/update-room/:roomId` (staff)
+- `DELETE /api/rooms/delete-room/:roomId` (staff)
 
-- `server.js` — Express app entry, mounts routers
-- `createTable.js` — opens `database.db` and exports `db`
-- `routers/` — route definitions
-- `controllers/` — request handlers and SQL
-- `middleware/auth.js` — JWT verification and role checks
-- `test_data/` — optional seed scripts
+### Booking
 
-## Repository
+- `GET /api/booking/unavailable-slots/:roomName` (student or staff)
+- `POST /api/booking/create-booking` (student or staff)
+- `GET /api/booking` (student)
+- `PUT /api/booking/cancel-booking/:bookingId` (student)
+- `PUT /api/booking/cancel-booking-group/:bookingGroupId` (student)
 
-- GitHub: https://github.com/JINSEH/Uow_room_booking_system
+### Promo codes
+
+- `GET /api/promo-codes`
+- `POST /api/promo-codes/create-promo-code`
+- `PUT /api/promo-codes/update-promo-code/:promoCodeId`
+- `DELETE /api/promo-codes/delete-promo-code/:promoCodeId`
+
+## Project structure
+
+- `server.js` - app entry point, route mounting, static hosting
+- `createTable.js` - DB connection and lightweight schema migration
+- `controllers/` - business logic and SQL operations
+- `routers/` - API route registration
+- `middleware/` - auth and role guards
+- `public/` - frontend HTML/CSS/JS and uploaded room images
+- `test_data/` - optional seed scripts
+- `DEPLOYMENT.md` - deployment guide for VPS sharing
+- `deploy.sh` - quick redeploy script (PM2-based)
+
+## Deploy for teammate sharing
+
+Use the instructions in `DEPLOYMENT.md`.  
+Recommended: VPS + PM2 + Nginx, so teammates can access one shared URL and one shared `database.db`.
 
 ## License
 
-ISC (see `package.json`).
+ISC
