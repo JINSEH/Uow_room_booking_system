@@ -36,9 +36,10 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' })
   }
 
-  // Include role in token so middleware can check it
-  const token = jwt.sign({ id: user.id, role: user.role }, 'secret', { expiresIn: '1h' })
-  res.json({ token, role: user.role })
+  // Include userId so frontend can identify the logged-in user.
+  // Keep id for backward compatibility with existing middleware.
+  const token = jwt.sign({ id: user.id, userId: user.id, role: user.role }, 'secret', { expiresIn: '1h' })
+  res.json({ token, role: user.role, userId: user.id })
 }
 
 //Logout a user,
@@ -48,3 +49,22 @@ export const logoutUser = (req, res) => {
 };
 
 //API endpoints for user related operations
+
+//Get currently logged-in user profile from token
+export const getCurrentUser = (req, res) => {
+  const currentUserId = req.user?.userId || req.user?.id;
+
+  if (!currentUserId) {
+    return res.status(401).json({ error: "Invalid token payload" });
+  }
+
+  const user = db
+    .prepare("SELECT id, name, role FROM users WHERE id = ?")
+    .get(currentUserId);
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.status(200).json(user);
+};

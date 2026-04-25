@@ -3,6 +3,7 @@ import {
   loginUser,
   logoutUser,
   getUsers,
+  getCurrentUser,
 } from "../controllers/authController.js";
 import express from "express";
 import { authenticateToken, requireStaff } from "../middleware/auth.js";
@@ -13,3 +14,4 @@ authRouter.post("/registerUser", registerUser);
 authRouter.post("/login", loginUser);
 authRouter.get("/logout", logoutUser);
 authRouter.get("/all-users", authenticateToken, requireStaff, getUsers);
+authRouter.get("/me", authenticateToken, getCurrentUser);

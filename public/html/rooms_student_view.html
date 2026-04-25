@@ -14,8 +14,8 @@
     <aside class="sidebar" aria-label="Student navigation">
       <img class="sidebar-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
       <nav class="sidebar-nav">
-        <a href="#" class="nav-item is-active">Home</a>
-        <a href="#" class="nav-item">Bookings</a>
+        <a href="#" id="nav-home" class="nav-item is-active">Home</a>
+        <a href="#" id="nav-bookings" class="nav-item">Bookings</a>
         <a href="#" class="nav-item">Profile</a>
       </nav>
       <button id="logout-button" class="logout-button" type="button">Logout</button>
@@ -41,7 +41,81 @@
           <!-- Room cards are rendered by JavaScript -->
         </div>
       </section>
+
+      <section id="student-bookings-section" class="student-bookings-section student-bookings-hidden" aria-labelledby="student-bookings-title">
+        <div class="rooms-heading-row">
+          <h2 id="student-bookings-title">Your Booking Information</h2>
+        </div>
+        <p id="student-bookings-status" class="rooms-status" aria-live="polite">Loading your bookings...</p>
+        <div id="student-bookings-list" class="student-bookings-list"></div>
+      </section>
     </main>
+  </div>
+
+  <div id="booking-modal" class="booking-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+    <div class="booking-modal-card">
+      <button id="booking-modal-close" class="booking-modal-close" type="button" aria-label="Close booking modal">×</button>
+      <h2 id="booking-modal-title">Select date & time</h2>
+      <p id="booking-modal-room" class="booking-modal-room"></p>
+
+      <label class="booking-date-label" for="booking-date">Booking date</label>
+      <input id="booking-date" class="booking-date-input" type="date">
+
+      <p class="booking-help">Each slot is 1 hour. Select one or more slots. Fully booked slots are disabled.</p>
+
+      <div id="booking-slots" class="booking-slots" role="list" aria-label="Available time slots"></div>
+      <p id="booking-summary" class="booking-summary">No slots selected.</p>
+      <button id="booking-confirm" class="booking-confirm-button" type="button" disabled>Confirm selected slots</button>
+      <p id="booking-feedback" class="booking-feedback" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div id="payment-modal" class="booking-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
+    <div class="booking-modal-card payment-modal-card">
+      <button id="payment-modal-close" class="booking-modal-close" type="button" aria-label="Close payment modal">×</button>
+      <h2 id="payment-modal-title">Payment Summary</h2>
+
+      <div class="payment-summary-grid">
+        <p><strong>Room Name:</strong> <span id="payment-room-name">-</span></p>
+        <p><strong>Booking ID:</strong> <span id="payment-booking-id">Pending</span></p>
+        <p><strong>Date:</strong> <span id="payment-date">-</span></p>
+        <p><strong>Selected Time:</strong> <span id="payment-time">-</span></p>
+        <p><strong>Total:</strong> <span id="payment-total">-</span></p>
+      </div>
+
+      <label class="booking-date-label" for="payment-promo-code">Promotional code (optional)</label>
+      <input id="payment-promo-code" class="booking-date-input" type="text" placeholder="Enter promo code">
+
+      <p class="booking-help">Choose your payment method.</p>
+      <div class="payment-methods">
+        <label><input type="radio" name="payment-method" value="paynow" checked> PayNow</label>
+        <label><input type="radio" name="payment-method" value="card"> Credit / Debit Card</label>
+      </div>
+
+      <div id="paynow-panel" class="payment-panel">
+        <img
+          class="paynow-qr-image"
+          src="../images/paynow-qr.png"
+          alt="PayNow QR code"
+        >
+      </div>
+
+      <div id="card-panel" class="payment-panel payment-panel-hidden">
+        <label class="booking-date-label" for="payment-card-type">Card type</label>
+        <select id="payment-card-type" class="booking-date-input">
+          <option value="visa">Visa</option>
+          <option value="mastercard">Mastercard</option>
+          <option value="amex">American Express</option>
+        </select>
+        <label class="booking-date-label" for="payment-card-name">Name on card</label>
+        <input id="payment-card-name" class="booking-date-input" type="text" placeholder="Card holder name">
+        <label class="booking-date-label" for="payment-card-number">Card number</label>
+        <input id="payment-card-number" class="booking-date-input" type="text" placeholder="1234 5678 9012 3456">
+      </div>
+
+      <button id="payment-confirm" class="booking-confirm-button" type="button">Pay now</button>
+      <p id="payment-feedback" class="booking-feedback" aria-live="polite"></p>
+    </div>
   </div>
 
   <script src="../js/rooms_student_view.js"></script>

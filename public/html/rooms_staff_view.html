@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Rooms View</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/rooms_staff_view.css">
+</head>
+<body>
+  <div class="staff-layout">
+    <aside class="sidebar" aria-label="Staff navigation">
+      <img class="sidebar-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item is-active">Home</a>
+        <a href="#" class="nav-item">Create Rooms</a>
+        <a href="#" class="nav-item">Profile</a>
+      </nav>
+      <button id="logout-button" class="logout-button" type="button">Logout</button>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <h1 id="welcome-message">Welcome to the UOW Room Booking System!</h1>
+      </header>
+
+      <section class="rooms-section" aria-labelledby="rooms-title">
+        <div class="rooms-heading-row">
+          <h2 id="rooms-title">Rooms</h2>
+        </div>
+
+        <div class="filters-grid" aria-label="Room filters">
+          <label class="filter-control">
+            <span>Room type</span>
+            <select id="room-type-filter">
+              <option value="all">All room types</option>
+              <option value="Grand Hall">Grand Hall</option>
+              <option value="Lecture Theatre">Lecture Theatre</option>
+              <option value="Performing Arts">Performing Arts</option>
+              <option value="Seminar Room">Seminar Room</option>
+              <option value="Dance Studio">Dance Studio</option>
+              <option value="Discussion Room">Discussion Room</option>
+            </select>
+          </label>
+
+          <label class="filter-control">
+            <span>Status</span>
+            <select id="room-status-filter">
+              <option value="all">All statuses</option>
+              <option value="launched">Launched</option>
+              <option value="draft">Draft (my rooms)</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="rooms-status" class="rooms-status" aria-live="polite">Loading rooms...</p>
+
+        <div id="rooms-grid" class="rooms-grid" role="list" aria-label="Staff room cards">
+          <!-- Cards rendered by JavaScript -->
+        </div>
+
+        <div class="pagination-row">
+          <button id="rooms-prev" type="button" class="pagination-button">Previous</button>
+          <span id="page-info" class="page-info">Page 1 of 1</span>
+          <button id="rooms-next" type="button" class="pagination-button">Next</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/rooms_staff_view.js"></script>
+</body>
+</html>
