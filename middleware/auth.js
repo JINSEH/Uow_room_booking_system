@@ -1,5 +1,6 @@
 // middleware/auth.js
 import jwt from 'jsonwebtoken'
+const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
 export const authenticateToken = (req, res, next) => {
     //Splits "Bearer <token>" by space and returns just the token.
@@ -11,7 +12,7 @@ export const authenticateToken = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, 'secret')
+        const decoded = jwt.verify(token, JWT_SECRET)
         req.user = decoded  // Now can access user id through req.user.id
         next()
     } catch (err) {

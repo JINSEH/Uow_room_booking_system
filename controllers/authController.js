@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 //API endpoints for authentication related operations
+const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
 //Get all users
 export const getUsers = (req, res) => {
@@ -38,7 +39,7 @@ export const loginUser = async (req, res) => {
 
   // Include userId so frontend can identify the logged-in user.
   // Keep id for backward compatibility with existing middleware.
-  const token = jwt.sign({ id: user.id, userId: user.id, role: user.role }, 'secret', { expiresIn: '1h' })
+  const token = jwt.sign({ id: user.id, userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' })
   res.json({ token, role: user.role, userId: user.id })
 }
 
