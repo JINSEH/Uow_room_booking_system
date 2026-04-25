@@ -78,3 +78,16 @@ export const db = new Database("database.db");
 
 // db.prepare("DELETE FROM promo_codes").run();
 // db.prepare("DELETE FROM rooms").run();
+
+const roomColumns = db.prepare("PRAGMA table_info(rooms)").all();
+const roomColumnNames = new Set(roomColumns.map((column) => column.name));
+
+if (!roomColumnNames.has("description")) {
+  db.exec("ALTER TABLE rooms ADD COLUMN description TEXT DEFAULT ''");
+}
+if (!roomColumnNames.has("location")) {
+  db.exec("ALTER TABLE rooms ADD COLUMN location TEXT DEFAULT ''");
+}
+if (!roomColumnNames.has("image")) {
+  db.exec("ALTER TABLE rooms ADD COLUMN image TEXT DEFAULT ''");
+}

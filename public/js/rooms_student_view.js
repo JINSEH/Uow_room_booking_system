@@ -91,7 +91,7 @@ function formatTimeDisplay(timeText) {
 }
 
 function createRoomCard(room) {
-  const imageSource = roomImageMap[room.name] || "../images/index/discussion-room.png";
+  const imageSource = room.image || roomImageMap[room.name] || "../images/index/discussion-room.png";
   const description = room.description || "A modern SIM room space for bookings, classes, and student collaboration.";
   const location = room.location || "SIM Campus";
 
@@ -154,6 +154,18 @@ function getTodayDateText() {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${now.getFullYear()}-${month}-${day}`;
+}
+
+function isPastSlotForSelectedDate(selectedDate, slotStartTime) {
+  if (!selectedDate || !slotStartTime) return false;
+  const now = new Date();
+  const todayText = getTodayDateText();
+  if (selectedDate !== todayText) return false;
+
+  const [hourText, minuteText] = String(slotStartTime).split(":");
+  const slotStartDate = new Date(now);
+  slotStartDate.setHours(Number(hourText || 0), Number(minuteText || 0), 0, 0);
+  return slotStartDate <= now;
 }
 
 function getMaxBookingDateText() {
@@ -336,11 +348,12 @@ async function loadUnavailableSlots() {
     bookingSlotsContainer.innerHTML = "";
     bookingSlots.forEach((slot) => {
       const slotKey = `${slot.start}-${slot.end}`;
+      const isPastSlot = isPastSlotForSelectedDate(selectedDate, slot.start);
       const button = document.createElement("button");
       button.type = "button";
       button.className = "slot-button";
       button.textContent = slot.label;
-      button.disabled = unavailableSet.has(slotKey);
+      button.disabled = unavailableSet.has(slotKey) || isPastSlot;
       
       console.log(`Slot ${slotKey}: disabled=${button.disabled}, in set=${unavailableSet.has(slotKey)}`);
       

@@ -14,8 +14,8 @@
     <aside class="sidebar" aria-label="Staff navigation">
       <img class="sidebar-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
       <nav class="sidebar-nav">
-        <a href="#" class="nav-item is-active">Home</a>
-        <a href="#" class="nav-item">Create Rooms</a>
+        <a href="/html/rooms_staff_view.html" id="nav-home" class="nav-item is-active">Home</a>
+        <a href="/html/create_room_staff.html" id="nav-create-rooms" class="nav-item">Create Rooms</a>
         <a href="#" class="nav-item">Profile</a>
       </nav>
       <button id="logout-button" class="logout-button" type="button">Logout</button>
@@ -28,46 +28,61 @@
 
       <section class="rooms-section" aria-labelledby="rooms-title">
         <div class="rooms-heading-row">
-          <h2 id="rooms-title">Rooms</h2>
+          <h2 id="rooms-title">Types of Rooms</h2>
+          <div class="carousel-controls">
+            <button id="rooms-prev" type="button" class="carousel-button" aria-label="Show previous rooms">◀</button>
+            <button id="rooms-next" type="button" class="carousel-button" aria-label="Show next rooms">▶</button>
+          </div>
         </div>
 
-        <div class="filters-grid" aria-label="Room filters">
-          <label class="filter-control">
-            <span>Room type</span>
-            <select id="room-type-filter">
-              <option value="all">All room types</option>
-              <option value="Grand Hall">Grand Hall</option>
-              <option value="Lecture Theatre">Lecture Theatre</option>
-              <option value="Performing Arts">Performing Arts</option>
-              <option value="Seminar Room">Seminar Room</option>
-              <option value="Dance Studio">Dance Studio</option>
-              <option value="Discussion Room">Discussion Room</option>
-            </select>
-          </label>
+        <p id="rooms-status" class="rooms-status" aria-live="polite">Loading available rooms...</p>
 
-          <label class="filter-control">
-            <span>Status</span>
-            <select id="room-status-filter">
-              <option value="all">All statuses</option>
-              <option value="launched">Launched</option>
-              <option value="draft">Draft (my rooms)</option>
-            </select>
-          </label>
-        </div>
-
-        <p id="rooms-status" class="rooms-status" aria-live="polite">Loading rooms...</p>
-
-        <div id="rooms-grid" class="rooms-grid" role="list" aria-label="Staff room cards">
-          <!-- Cards rendered by JavaScript -->
-        </div>
-
-        <div class="pagination-row">
-          <button id="rooms-prev" type="button" class="pagination-button">Previous</button>
-          <span id="page-info" class="page-info">Page 1 of 1</span>
-          <button id="rooms-next" type="button" class="pagination-button">Next</button>
+        <div id="rooms-carousel" class="rooms-carousel" role="list" aria-label="Available room cards">
+          <!-- Room cards are rendered by JavaScript -->
         </div>
       </section>
     </main>
+  </div>
+
+  <div id="booking-modal" class="booking-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+    <div class="booking-modal-card">
+      <button id="booking-modal-close" class="booking-modal-close" type="button" aria-label="Close reserve modal">×</button>
+      <h2 id="booking-modal-title">Reserve rooms</h2>
+      <p id="booking-modal-room" class="booking-modal-room"></p>
+
+      <label class="booking-date-label" for="booking-date">Reserve date</label>
+      <input id="booking-date" class="booking-date-input" type="date">
+
+      <p class="booking-help">Each slot is 1 hour. Select one or more slots. Already booked slots are disabled.</p>
+
+      <div id="booking-slots" class="booking-slots" role="list" aria-label="Available time slots"></div>
+      <p id="booking-summary" class="booking-summary">No slots selected.</p>
+      <button id="booking-confirm" class="booking-confirm-button" type="button" disabled>Reserve selected slots</button>
+      <p id="booking-feedback" class="booking-feedback" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div id="update-room-modal" class="booking-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="update-room-modal-title">
+    <div class="booking-modal-card">
+      <button id="update-room-modal-close" class="booking-modal-close" type="button" aria-label="Close update room modal">×</button>
+      <h2 id="update-room-modal-title">Update room details</h2>
+      <p id="update-room-modal-room" class="booking-modal-room"></p>
+
+      <label class="booking-date-label" for="update-room-price">Price per hour (SGD)</label>
+      <input id="update-room-price" class="booking-date-input" type="number" min="0" step="1" placeholder="Enter room price">
+
+      <label class="booking-date-label" for="update-room-location">Location</label>
+      <input id="update-room-location" class="booking-date-input" type="text" placeholder="Enter room location">
+
+      <label class="booking-date-label" for="update-room-image">Room image (optional)</label>
+      <input id="update-room-image" class="booking-date-input" type="file" accept="image/*">
+
+      <label class="booking-date-label" for="update-room-description">Description</label>
+      <textarea id="update-room-description" class="booking-textarea-input" rows="4" placeholder="Enter room description"></textarea>
+
+      <button id="update-room-confirm" class="booking-confirm-button" type="button">Save changes</button>
+      <p id="update-room-feedback" class="booking-feedback" aria-live="polite"></p>
+    </div>
   </div>
 
   <script src="../js/rooms_staff_view.js"></script>

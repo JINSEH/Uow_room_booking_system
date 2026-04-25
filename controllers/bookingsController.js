@@ -3,6 +3,10 @@ import { db } from "../createTable.js";
 //API endpoints for booking related operations
 const MAX_ADVANCE_BOOKING_DAYS = 14;
 
+function getNormalizedRole(roleValue) {
+  return String(roleValue || "").trim().toLowerCase();
+}
+
 function parseDateText(dateText) {
   const [yearText, monthText, dayText] = String(dateText || "").split("-");
   const year = Number(yearText);
@@ -61,11 +65,12 @@ export const getBookingById = (req, res) => {
 export const createBooking = (req, res) => {
   const { room_name, booking_date, slots, promo_code } = req.body;
   const student_id = req.user.id;
+  const currentRole = getNormalizedRole(req.user?.role);
 
   if (!booking_date) {
     return res.status(400).json({ error: 'booking_date is required' });
   }
-  if (!isBookingDateWithinWindow(booking_date)) {
+  if (currentRole === "student" && !isBookingDateWithinWindow(booking_date)) {
     return res.status(400).json({
       error: "booking_date must be between today and 14 days from today",
     });
@@ -216,11 +221,12 @@ export const createBooking = (req, res) => {
 export const getUnavailableSlots = (req, res) => {
   const { roomName } = req.params;
   const { date } = req.query;
+  const currentRole = getNormalizedRole(req.user?.role);
 
   if (!date) {
     return res.status(400).json({ error: "date is required" });
   }
-  if (!isBookingDateWithinWindow(date)) {
+  if (currentRole === "student" && !isBookingDateWithinWindow(date)) {
     return res.status(400).json({
       error: "date must be between today and 14 days from today",
     });

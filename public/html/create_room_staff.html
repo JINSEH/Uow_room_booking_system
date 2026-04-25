@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/create_room_staff.css">
+</head>
+<body>
+  <div class="staff-layout">
+    <aside class="sidebar" aria-label="Staff navigation">
+      <img class="sidebar-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <nav class="sidebar-nav">
+        <a href="/html/rooms_staff_view.html" class="nav-item">Home</a>
+        <a href="/html/create_room_staff.html" class="nav-item is-active">Create Rooms</a>
+        <a href="#" class="nav-item">Profile</a>
+      </nav>
+      <button id="logout-button" class="logout-button" type="button">Logout</button>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <h1>Create Room</h1>
+        <p class="page-subtitle">Add a new room with the required details for staff and students to use.</p>
+      </header>
+
+      <section class="form-section">
+        <form id="create-room-form" class="create-room-form">
+          <label class="form-label" for="room-name">Room name</label>
+          <input id="room-name" class="form-input" type="text" required placeholder="e.g. Seminar Room">
+
+          <label class="form-label" for="room-capacity">Capacity</label>
+          <input id="room-capacity" class="form-input" type="number" min="1" required placeholder="e.g. 60">
+
+          <label class="form-label" for="room-price">Price per hour (SGD)</label>
+          <input id="room-price" class="form-input" type="number" min="0" step="1" required placeholder="e.g. 100">
+
+          <label class="form-label" for="room-location">Location</label>
+          <input id="room-location" class="form-input" type="text" required placeholder="e.g. Block C, Level 3, SIM Campus">
+
+          <label class="form-label" for="room-image">Room image</label>
+          <input id="room-image" class="form-input" type="file" accept="image/*" required>
+
+          <label class="form-label" for="room-description">Description</label>
+          <textarea id="room-description" class="form-textarea" rows="4" required placeholder="Describe this room and what it is best used for."></textarea>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Create Room</button>
+            <a class="secondary-link" href="/html/rooms_staff_view.html">Back to Rooms</a>
+          </div>
+
+          <p id="create-room-feedback" class="form-feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/create_room_staff.js"></script>
+</body>
+</html>

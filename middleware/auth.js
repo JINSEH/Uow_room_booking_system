@@ -32,3 +32,10 @@ export const requireStudent = (req, res, next) => {
     }
     next()
 }
+
+export const requireStudentOrStaff = (req, res, next) => {
+    if (req.user.role !== 'student' && req.user.role !== 'staff') {
+        return res.status(403).json({ error: 'Students or staff only' })
+    }
+    next()
+}
