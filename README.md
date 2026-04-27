@@ -1,121 +1,84 @@
 # UOW Room Booking System
 
-Backend API for a university room booking system: staff manage rooms and promo codes; students browse launched rooms and manage their bookings. Built for coursework (CSIT 214 IT Project Management).
+A full-stack room booking website for the CSIT 214 project.  
+This project runs locally and uses one Express app to serve both frontend pages and backend APIs.
+
+## How the website works
+
+### 1) User roles
+- **Students** can browse available rooms, check unavailable time slots, and create or cancel bookings.
+- **Staff** can do booking actions and also manage rooms (create, update, delete, launch/draft) and upload room images.
+
+### 2) Frontend flow
+- The frontend is built with static HTML, CSS, and JavaScript in `public/`.
+- Pages send requests to backend API routes (for login, room data, booking data, and promo codes).
+- The same server also serves uploaded room images from `public/uploads/`.
+
+### 3) Backend flow
+- `server.js` starts the Express server and mounts all routes.
+- Routes in `routers/` receive requests and call controllers in `controllers/`.
+- Controllers run SQL operations through `better-sqlite3` to read/write `database.db`.
+- Middleware in `middleware/` validates JWT tokens and checks user roles for protected endpoints.
+
+### 4) Authentication and authorization
+- Users register/login through auth endpoints.
+- On login, the server returns a JWT token.
+- Protected requests include: `Authorization: Bearer <token>`.
+- Role checks (`student` / `staff`) control access to staff-only features.
+
+### 5) Booking logic (high level)
+- A user selects a room and date/time.
+- The system checks unavailable slots for that room.
+- If the slot is valid, a booking is created and saved in the database.
+- Users can view and cancel their own bookings.
 
 ## Tech stack
 
-- **Node.js** with **ES modules** (`"type": "module"` in `package.json`)
-- **Express 5** — HTTP API
-- **better-sqlite3** — SQLite database (`database.db` in the project root)
-- **bcrypt** — password hashing
-- **jsonwebtoken** — login tokens for protected routes
+- **Runtime:** Node.js (ES Modules)
+- **Web framework:** Express 5
+- **Database:** SQLite with `better-sqlite3`
+- **Authentication:** JWT (`jsonwebtoken`)
+- **Password security:** `bcrypt`
+- **File upload:** `multer`
+- **Environment config:** `dotenv`
+- **Dev tooling:** `nodemon`
 
-## Prerequisites
+## Run locally
 
-- [Node.js](https://nodejs.org/) (LTS recommended, e.g. v18 or newer)
+### Prerequisites
+- Node.js 18+ (Node 22 recommended)
 
-## Getting started
+### Setup
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create `.env` from `.env.example` and set:
+   ```env
+   PORT=3000
+   JWT_SECRET=your-very-long-random-secret
+   ```
+3. Start the app:
+   ```bash
+   npm start
+   ```
+4. Development mode (auto-restart):
+   ```bash
+   npx nodemon server.js
+   ```
 
-### 1. Install dependencies
+Open [http://localhost:3000](http://localhost:3000)
 
-```bash
-npm install
-```
+## Project structure
 
-### 2. Database
-
-The app uses `database.db` via `createTable.js`. If you are setting up from scratch, you need the SQLite tables (`users`, `rooms`, `bookings`, `promo_codes`, etc.) to exist. Example `CREATE TABLE` statements are in comments inside `createTable.js`; you can uncomment and run them once (e.g. with a small script that imports `db` and runs `db.exec(...)`), or restore a `database.db` file your team already prepared.
-
-### 3. (Optional) Seed test data
-
-Scripts under `test_data/` insert sample users, rooms, bookings, and promo codes. Run from the project root (order may matter if foreign keys reference other rows):
-
-```bash
-node test_data/seedUsers.js
-node test_data/seedRooms.js
-node test_data/seedPromoCodes.js
-node test_data/seedBookings.js
-```
-
-Example seeded logins (see `test_data/seedUsers.js`): staff `terence@uow.edu.au`, student `edwin@uow.edu.au`, password `password123`.
-
-### 4. Run the server
-
-```bash
-npm start
-```
-
-For auto-restart on file changes during development:
-
-```bash
-npx nodemon server.js
-```
-
-Default URL: **http://localhost:3000** (port is set in `server.js`).
-
-## Postman collection
-
-Ready-made requests for every endpoint live in this Postman collection (headers, bodies, and folders as you set them up):
-
-[UOW Room Booking — Postman collection](https://web.postman.co/workspace/My-Workspace~27a9518d-c4f5-4902-8078-2c1e206498c7/collection/43814840-3840b6cb-0145-49b4-a262-58ff835b5142?action=share&source=copy-link&creator=43814840)
-
-You usually need to be **signed in to Postman** for workspace links to open.
-
-## Authentication
-
-1. **Register** or **login** (see routes below).
-2. For protected routes, send the JWT in the header:
-
-   `Authorization: Bearer <your_token_here>`
-
-Tokens are issued on login and include `id` and `role` (`staff` or `student`). Middleware enforces **staff-only** vs **student-only** routes.
-
-> **Learning note:** The JWT signing secret is currently a fixed string in the code (`'secret'`). For a real production app you would read a strong secret from an environment variable and never commit it.
-
-## API overview
-
-Base path: `http://localhost:3000`
-
-| Area | Method | Path | Access |
-|------|--------|------|--------|
-| Health | GET | `/` | Public |
-| **Auth** | POST | `/api/auth/registerUser` | Public |
-| | POST | `/api/auth/login` | Public |
-| | GET | `/api/auth/logout` | Public (client discards token) |
-| | GET | `/api/auth/all-users` | Staff + token |
-| **Rooms** | GET | `/api/rooms/` | Staff + token |
-| | GET | `/api/rooms/launched` | Public |
-| | GET | `/api/rooms/draft` | Staff + token |
-| | GET | `/api/rooms/:roomId` | Public |
-| | POST | `/api/rooms/create-room` | Staff + token |
-| | PUT | `/api/rooms/update-room/:roomId` | Staff + token |
-| | DELETE | `/api/rooms/delete-room/:roomId` | Staff + token |
-| **Bookings** | GET | `/api/booking/` | Student + token |
-| | GET | `/api/booking/:bookingId` | Student + token |
-| | POST | `/api/booking/create-booking` | Student + token |
-| | PUT | `/api/booking/update-booking/:bookingId` | Student + token |
-| | PUT | `/api/booking/cancel-booking/:bookingId` | Student + token |
-| **Promo codes** | GET | `/api/promo-codes/` | Staff + token |
-| | GET | `/api/promo-codes/:promoCodeId` | Staff + token |
-| | POST | `/api/promo-codes/create-promo-code` | Staff + token |
-| | PUT | `/api/promo-codes/update-promo-code/:promoCodeId` | Staff + token |
-| | DELETE | `/api/promo-codes/delete-promo-code/:promoCodeId` | Staff + token |
-
-Request bodies for register/login and CRUD operations match the fields used in the controllers (e.g. register: `name`, `email`, `password`, `role`).
-
-## Project layout (high level)
-
-- `server.js` — Express app entry, mounts routers
-- `createTable.js` — opens `database.db` and exports `db`
-- `routers/` — route definitions
-- `controllers/` — request handlers and SQL
-- `middleware/auth.js` — JWT verification and role checks
-- `test_data/` — optional seed scripts
-
-## Repository
-
-- GitHub: https://github.com/JINSEH/Uow_room_booking_system
+- `server.js` - app entry point and route mounting
+- `createTable.js` - database setup and schema updates
+- `routers/` - API endpoints
+- `controllers/` - application logic and database operations
+- `middleware/` - auth and role checks
+- `public/` - frontend pages/assets and uploaded room images
+- `test_data/` - optional data seeding scripts
 
 ## License
 
-ISC (see `package.json`).
+ISC

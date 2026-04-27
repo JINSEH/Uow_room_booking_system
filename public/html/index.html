@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/universal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <title>Home Page</title>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <p>UOW Room Booking System</p>
+      <img class="sim-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+    </div>
+  </nav>
+  <main>
+    <article class="about-us-section">
+      <div class="about-hero" role="img" aria-label="SIM campus exterior"></div>
+
+      <div class="about-content">
+        <h2>About Us</h2>
+
+        <div class="about-grid">
+          <section class="about-card">
+            <img class="about-image about-image-library" src="../images/index/library.png" alt="Library overview">
+            <h3>Overview</h3>
+            <p>
+              The Tay Eng Soon Library at SIM Campus supports the professional development and
+              lifelong learning of our community through both physical   and electronic resources.
+              The library has been made shelf-less to provide an easier way to borrow books and
+              make way for fresh new spaces such as a caf&#233;-style seating area, privacy pods,
+              group discussion rooms, Chill Corner, and Silent Zone.
+            </p>
+          </section>
+
+          <section class="about-card">
+            <img class="about-image about-image-vision" src="../images/index/people-studying.png" alt="Students studying in the library">
+            <h3>Vision</h3>
+            <p>
+              A library that brings people together by delivering an inspiring library experience
+              through smarter use of technology and a comprehensive resource pool to support
+              learning needs.
+            </p>
+          </section>
+        </div>
+      </div>
+    </article>
+
+    <section class="rooms-section" aria-labelledby="rooms-title">
+      <div class="rooms-content">
+        <h2 id="rooms-title">Type of Rooms</h2>
+
+        <div class="rooms-grid" role="list">
+          <article class="room-card" role="listitem">
+            <img src="../images/index/grand-hall.png" alt="Grand Hall">
+            <h3>Grand Hall</h3>
+          </article>
+
+          <article class="room-card" role="listitem">
+            <img src="../images/index/lecture-theatre.png" alt="Lecture Theatre">
+            <h3>Lecture Theatre</h3>
+          </article>
+
+          <article class="room-card" role="listitem">
+            <img src="../images/index/performing-arts.png" alt="Performing Arts">
+            <h3>Performing Arts</h3>
+          </article>
+
+          <article class="room-card" role="listitem">
+            <img src="../images/index/seminar.png" alt="Seminar Room">
+            <h3>Seminar Room</h3>
+          </article>
+
+          <article class="room-card" role="listitem">
+            <img src="../images/index/discussion-room.png" alt="Discussion Room">
+            <h3>Discussion Room</h3>
+          </article>
+
+          <article class="room-card" role="listitem">
+            <img src="../images/index/dance-studio.png" alt="Dance Studio">
+            <h3>Dance Studio</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="login-banner" aria-label="Login selection">
+      <div class="login-overlay">
+        <h2>Login as?</h2>
+        <div class="login-actions">
+          <a href="#" class="login-button" data-open-login>Staff</a>
+          <a href="#" class="login-button" data-open-login>Student</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-content">
+      <section class="footer-column">
+        <h3 class="footer-badge">using the library</h3>
+        <ul>
+          <li><a href="#">Collections</a></li>
+          <li><a href="#">Borrowing</a></li>
+          <li><a href="#">Library Space</a></li>
+          <li><a href="#">Etiquette</a></li>
+        </ul>
+      </section>
+
+      <section class="footer-column">
+        <h3 class="footer-badge">e-resources</h3>
+        <ul>
+          <li><a href="#">Database A-Z</a></li>
+          <li><a href="#">E-Resources by Subject</a></li>
+          <li><a href="#">E-Resources Policy</a></li>
+          <li><a href="#">University Partner Library</a></li>
+          <li><a href="#">Podcasts</a></li>
+          <li><a href="#">Study Smart</a></li>
+          <li><a href="#">Videos &amp; Guides</a></li>
+        </ul>
+      </section>
+
+      <section class="footer-column">
+        <h3 class="footer-badge">SIM Campus</h3>
+        <ul>
+          <li>461 Clementi Road</li>
+          <li>Singapore 599491</li>
+          <li>+65 6248 9601</li>
+        </ul>
+      </section>
+    </div>
+  </footer>
+
+  <!-- Modal for login -->
+  <div id="login-modal" class="login-modal" aria-hidden="true">
+    <div class="login-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button type="button" class="modal-close" data-close-modal aria-label="Close login form">&times;</button>
+      <img class="modal-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <h2 id="modal-title">Login</h2>
+
+      <form class="modal-form" action="#" method="post">
+        <label for="login-email">Email:</label>
+        <input id="login-email" type="email" name="email" required>
+
+        <label for="login-password">Password:</label>
+        <input id="login-password" type="password" name="password" required>
+        <p id="login-error" class="modal-inline-error" aria-live="polite"></p>
+
+        <button type="submit" class="modal-submit">Login</button>
+      </form>
+
+      <p class="modal-helper-text">Forgot <a href="#">password</a>?</p>
+      <p class="modal-helper-text">Don't have an account? <a href="#" data-open-register>Register</a></p>
+    </div>
+  </div>
+
+  <!-- Modal for register -->
+  <div id="register-modal" class="login-modal" aria-hidden="true">
+    <div class="login-modal-card" role="dialog" aria-modal="true" aria-labelledby="register-modal-title">
+      <button type="button" class="modal-close" data-close-modal aria-label="Close register form">&times;</button>
+      <img class="modal-logo" src="../images/sim-logo.png" alt="Singapore Institute of Management logo">
+      <h2 id="register-modal-title">Register</h2>
+
+      <form class="modal-form" action="#" method="post">
+        <label for="register-name">Name:</label>
+        <input id="register-name" type="text" name="name" required>
+
+        <label for="register-email">Email:</label>
+        <input id="register-email" type="email" name="email" required>
+
+        <label for="register-password">Password:</label>
+        <input id="register-password" type="password" name="password" required>
+
+        <p class="modal-role-label">Role:</p>
+        <div class="role-options">
+          <label class="role-option" for="register-role-staff">
+            <input
+              id="register-role-staff"
+              type="checkbox"
+              value="staff"
+              data-role-checkbox
+            >
+            Staff
+          </label>
+          <label class="role-option" for="register-role-student">
+            <input
+              id="register-role-student"
+              type="checkbox"
+              value="student"
+              data-role-checkbox
+            >
+            Student
+          </label>
+        </div>
+        <input id="register-role" type="hidden" name="role" required>
+        <p id="register-role-error" class="modal-inline-error" aria-live="polite"></p>
+
+        <button type="submit" class="modal-submit">Register</button>
+      </form>
+
+      <p class="modal-helper-text">Already have an account? <a href="#" data-open-login>Login</a></p>
+    </div>
+  </div>
+  <script src="../js/modal.js"></script>
+</body>
+</html>

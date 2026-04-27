@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #d7d2c5;
+  color: #171717;
+}
+
+.staff-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, #b6724f 0%, #c4815b 100%);
+  color: #fff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  width: 118px;
+  height: auto;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.nav-item {
+  color: #f9f5ef;
+  text-decoration: none;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.nav-item.is-active {
+  font-weight: 700;
+}
+
+.logout-button {
+  margin-top: auto;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f2b56d 0%, #f44277 100%);
+  color: #121212;
+  font-size: 1.05rem;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+}
+
+.content {
+  padding: 1.5rem clamp(1rem, 3vw, 2.4rem) 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.page-subtitle {
+  margin: 0.45rem 0 0;
+  color: #4f4b45;
+}
+
+.form-section {
+  margin-top: 1.2rem;
+}
+
+.create-room-form {
+  background: #f6f1e7;
+  border: 1px solid #b9b2a3;
+  border-radius: 14px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.65rem;
+  max-width: 760px;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #3f3b35;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  border: 1px solid #aaa28f;
+  border-radius: 10px;
+  padding: 0.62rem 0.7rem;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.primary-button {
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f2b56d 0%, #f44277 100%);
+  color: #151515;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+}
+
+.secondary-link {
+  color: #3f3b35;
+  text-decoration: none;
+}
+
+.secondary-link:hover {
+  text-decoration: underline;
+}
+
+.form-feedback {
+  min-height: 1.1rem;
+  margin: 0.3rem 0 0;
+  color: #4f4b45;
+}
+
+@media (max-width: 760px) {
+  .staff-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+
+  .sidebar-nav {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+  }
+}

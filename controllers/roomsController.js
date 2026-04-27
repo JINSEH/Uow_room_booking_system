@@ -1,6 +1,16 @@
 import { db } from "../createTable.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 //API endpoints for room related operations
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadDirectory = path.join(__dirname, "..", "public", "images", "uploads");
+
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+}
 
 //Get all rooms
 export const getRooms = (req, res) => {
@@ -49,7 +59,10 @@ export const getLaunchedRooms = (req, res) => {
 
 //Get rooms that are drafted
 export const getDraftedRooms = (req, res) => {
-  const rooms = db.prepare(`SELECT * FROM rooms WHERE status=?`).all("draft")
+  const staffId = req.user?.userId || req.user?.id;
+  const rooms = db
+    .prepare(`SELECT * FROM rooms WHERE status = ? AND created_by = ?`)
+    .all("draft", staffId);
   res.json(rooms)
 }
 
@@ -64,20 +77,31 @@ export const getRoomById = (req, res) => {
   }
 };
 
+//Upload room image and return public path
+export const uploadRoomImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "image file is required" });
+  }
+
+  const imagePath = `../images/uploads/${req.file.filename}`;
+  res.status(201).json({ imagePath });
+};
+
 //Create a new room
 export const createRoom = (req, res) => {
-  const { name, capacity, price, date, start_time, end_time } = req.body
+  const { name, capacity, price, description, location, image } = req.body
   const created_by = req.user.id 
+  const status = "launched";
 
   // Check all required fields
-  if (!name || !capacity || !price) {
-      return res.status(400).json({ error: 'name, capacity and price are required' })
+  if (!name || !capacity || !price || !description || !location || !image) {
+      return res.status(400).json({ error: 'name, capacity, price, description, location and image are required' })
   }
 
   const room = db.prepare(`
-      INSERT INTO rooms (name, capacity, price, date, start_time, end_time, created_by) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(name, capacity, price, date, start_time, end_time, created_by)
+      INSERT INTO rooms (name, capacity, price, description, location, image, status, created_by) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(name, capacity, price, description, location, image, status, created_by)
 
   res.status(201).json({ message: 'Room created', roomId: room.lastInsertRowid })
 }
@@ -85,7 +109,7 @@ export const createRoom = (req, res) => {
 //Update a room
 export const updateRoom = (req, res) => {
   const { roomId } = req.params
-  const { name, capacity, price, date, start_time, end_time } = req.body
+  const { name, capacity, price, description, location, image } = req.body
 
   // Check if room exists
   const existing = db.prepare('SELECT * FROM rooms WHERE id = ?').get(roomId)
@@ -99,17 +123,17 @@ export const updateRoom = (req, res) => {
           name = ?,
           capacity = ?,
           price = ?,
-          date = ?,
-          start_time = ?,
-          end_time = ?
+          description = ?,
+          location = ?,
+          image = ?
       WHERE id = ?
   `).run(
       name ?? existing.name,
       capacity ?? existing.capacity,
       price ?? existing.price,
-      date ?? existing.date,
-      start_time ?? existing.start_time,
-      end_time ?? existing.end_time,
+      description ?? existing.description,
+      location ?? existing.location,
+      image ?? existing.image,
       roomId
   )
 
