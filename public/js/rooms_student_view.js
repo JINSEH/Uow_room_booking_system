@@ -36,6 +36,8 @@ let carouselPageIndex = 0;
 let selectedRoomType = "";
 let selectedSlotKeys = new Set();
 let selectedRoomHourlyPrice = 0;
+let paymentBaseTotal = 0;
+let promoQuoteRequestId = 0;
 
 const roomImageMap = {
   "Grand Hall": "../images/index/grand-hall.png",
@@ -275,6 +277,7 @@ function openPaymentModal() {
   }
 
   const estimatedTotal = selectedRoomHourlyPrice * selectedSlots.length;
+  paymentBaseTotal = estimatedTotal;
 
   paymentRoomName.textContent = selectedRoomType;
   paymentDate.textContent = bookingDateInput.value;
@@ -306,6 +309,70 @@ function updateSelectedSlotsSummary() {
 
   bookingSummary.textContent = `${selectedSlotKeys.size} slot(s) selected (${selectedSlotKeys.size} hour(s)).`;
   bookingConfirmButton.disabled = false;
+}
+
+async function refreshPaymentTotalFromPromoCode() {
+  if (!paymentTotal) return;
+
+  const promoCodeValue = paymentPromoCode?.value?.trim() || "";
+  if (!promoCodeValue) {
+    paymentTotal.textContent = formatPrice(paymentBaseTotal);
+    if (paymentFeedback) {
+      paymentFeedback.textContent = "";
+    }
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const selectedSlots = getCurrentSelectedSlots();
+  if (selectedSlots.length === 0) {
+    paymentTotal.textContent = formatPrice(paymentBaseTotal);
+    return;
+  }
+
+  const requestId = ++promoQuoteRequestId;
+
+  try {
+    const response = await fetch("/api/booking/quote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        room_name: selectedRoomType,
+        slots: selectedSlots.map((slot) => ({
+          start_time: slot.start,
+          end_time: slot.end,
+        })),
+        promo_code: promoCodeValue,
+      }),
+    });
+
+    // Ignore stale response if a newer promo code request already started.
+    if (requestId !== promoQuoteRequestId) return;
+
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      paymentTotal.textContent = formatPrice(paymentBaseTotal);
+      if (paymentFeedback) {
+        paymentFeedback.textContent = body.error || "Invalid promo code.";
+      }
+      return;
+    }
+
+    paymentTotal.textContent = formatPrice(Number(body.total_price || 0));
+    if (paymentFeedback) {
+      paymentFeedback.textContent = body.discount_amount > 0
+        ? `Promo applied. You save ${formatPrice(Number(body.discount_amount || 0))}.`
+        : "Promo code is valid.";
+    }
+  } catch (error) {
+    // Keep original total if quote service is unavailable.
+    paymentTotal.textContent = formatPrice(paymentBaseTotal);
+  }
 }
 
 // Loads the timeslots and disables the already booked time slots
@@ -686,6 +753,12 @@ function attachBookingModalEvents() {
       if (event.target === paymentModal) {
         closePaymentModal();
       }
+    });
+  }
+
+  if (paymentPromoCode) {
+    paymentPromoCode.addEventListener("input", () => {
+      refreshPaymentTotalFromPromoCode();
     });
   }
 

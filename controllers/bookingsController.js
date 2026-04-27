@@ -28,6 +28,50 @@ function isBookingDateWithinWindow(dateText) {
   return selectedDate >= today && selectedDate <= maxDate;
 }
 
+function getPromoByCode(codeValue) {
+  const normalizedCode = String(codeValue || "").trim();
+  if (!normalizedCode) return null;
+  return db
+    .prepare("SELECT * FROM promo_codes WHERE code = ? COLLATE NOCASE")
+    .get(normalizedCode);
+}
+
+function calculateBookingTotal({ roomPrice, slotCount, promoCode }) {
+  const normalizedRoomPrice = Number(roomPrice || 0);
+  const normalizedSlotCount = Number(slotCount || 0);
+  const subtotal = normalizedSlotCount * normalizedRoomPrice;
+  let total_price = subtotal;
+  let promo_code_id = null;
+  let discount_amount = 0;
+
+  if (promoCode) {
+    const promo = getPromoByCode(promoCode);
+    if (!promo) {
+      return { error: "Invalid promo code" };
+    }
+
+    if (promo.discount_type === "flat") {
+      discount_amount = Number(promo.discount_value || 0);
+    } else if (promo.discount_type === "percent") {
+      discount_amount = subtotal * (Number(promo.discount_value || 0) / 100);
+    }
+
+    total_price = subtotal - discount_amount;
+    promo_code_id = promo.id;
+  }
+
+  if (total_price < 0) {
+    total_price = 0;
+  }
+
+  return {
+    subtotal,
+    total_price,
+    discount_amount: Math.max(0, subtotal - total_price),
+    promo_code_id,
+  };
+}
+
 //Get all bookings
 export const getBookings = (req, res) => {
   const student_id = req.user.id;
@@ -147,29 +191,17 @@ export const createBooking = (req, res) => {
 
   // Calculate pricing
   const slotCount = sortedSlots.length;
-  const subtotal = slotCount * Number(room.price);
-  let total_price = subtotal;
-
-  // Apply promo code if provided
-  let promo_code_id = null;
-  if (promo_code) {
-    const promo = db.prepare('SELECT * FROM promo_codes WHERE code = ?').get(promo_code);
-    if (!promo) {
-      return res.status(400).json({ error: 'Invalid promo code' });
-    }
-
-    if (promo.discount_type === 'flat') {
-      total_price -= promo.discount_value;
-    } else if (promo.discount_type === 'percent') {
-      total_price -= total_price * (promo.discount_value / 100);
-    }
-
-    promo_code_id = promo.id;
+  const pricing = calculateBookingTotal({
+    roomPrice: room.price,
+    slotCount,
+    promoCode: promo_code,
+  });
+  if (pricing.error) {
+    return res.status(400).json({ error: pricing.error });
   }
-
-  if (total_price < 0) {
-    total_price = 0;
-  }
+  const subtotal = pricing.subtotal;
+  const total_price = pricing.total_price;
+  const promo_code_id = pricing.promo_code_id;
 
   const perSlotPrice = slotCount > 0 ? total_price / slotCount : 0;
 
@@ -214,6 +246,59 @@ export const createBooking = (req, res) => {
     bookings_created: created.bookingIds.length,
     hourly_rate: Number(room.price),
     total_price,
+  });
+};
+
+// Get a price quote for selected slots before creating booking
+export const getBookingQuote = (req, res) => {
+  const { room_name, slots, promo_code } = req.body;
+
+  if (!room_name) {
+    return res.status(400).json({ error: "room_name is required" });
+  }
+
+  const requestedSlots = Array.isArray(slots) ? slots : [];
+  if (requestedSlots.length === 0) {
+    return res.status(400).json({ error: "At least one slot is required" });
+  }
+
+  const invalidSlot = requestedSlots.find((slot) => !slot?.start_time || !slot?.end_time);
+  if (invalidSlot) {
+    return res.status(400).json({ error: "Each slot must include start_time and end_time" });
+  }
+
+  const room = db
+    .prepare(
+      `
+    SELECT * FROM rooms
+    WHERE name = ? AND status = 'launched'
+    LIMIT 1
+  `,
+    )
+    .get(room_name);
+
+  if (!room) {
+    return res.status(400).json({ error: "Room type not found or not available" });
+  }
+
+  const slotCount = requestedSlots.length;
+  const pricing = calculateBookingTotal({
+    roomPrice: room.price,
+    slotCount,
+    promoCode: promo_code,
+  });
+  if (pricing.error) {
+    return res.status(400).json({ error: pricing.error });
+  }
+
+  return res.json({
+    room_name,
+    slot_count: slotCount,
+    hourly_rate: Number(room.price),
+    subtotal: pricing.subtotal,
+    discount_amount: pricing.discount_amount,
+    total_price: pricing.total_price,
+    promo_applied: Boolean(String(promo_code || "").trim()),
   });
 };
 
