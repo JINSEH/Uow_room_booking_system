@@ -1,149 +1,83 @@
 # UOW Room Booking System
 
-Full-stack university room booking system for CSIT 214.  
-The same Express app serves both:
+A full-stack room booking website for the CSIT 214 project.  
+This project runs locally and uses one Express app to serve both frontend pages and backend APIs.
 
-- frontend pages from `public/`
-- backend APIs from `routers/` and `controllers/`
+## How the website works
 
-Students can browse and book rooms. Staff can create, update, delete, reserve rooms, and upload room images.
+### 1) User roles
+- **Students** can browse available rooms, check unavailable time slots, and create or cancel bookings.
+- **Staff** can do booking actions and also manage rooms (create, update, delete, launch/draft) and upload room images.
+
+### 2) Frontend flow
+- The frontend is built with static HTML, CSS, and JavaScript in `public/`.
+- Pages send requests to backend API routes (for login, room data, booking data, and promo codes).
+- The same server also serves uploaded room images from `public/uploads/`.
+
+### 3) Backend flow
+- `server.js` starts the Express server and mounts all routes.
+- Routes in `routers/` receive requests and call controllers in `controllers/`.
+- Controllers run SQL operations through `better-sqlite3` to read/write `database.db`.
+- Middleware in `middleware/` validates JWT tokens and checks user roles for protected endpoints.
+
+### 4) Authentication and authorization
+- Users register/login through auth endpoints.
+- On login, the server returns a JWT token.
+- Protected requests include: `Authorization: Bearer <token>`.
+- Role checks (`student` / `staff`) control access to staff-only features.
+
+### 5) Booking logic (high level)
+- A user selects a room and date/time.
+- The system checks unavailable slots for that room.
+- If the slot is valid, a booking is created and saved in the database.
+- Users can view and cancel their own bookings.
 
 ## Tech stack
 
-- Node.js (ES modules)
-- Express 5
-- SQLite (`better-sqlite3`)
-- JWT auth (`jsonwebtoken`)
-- Password hashing (`bcrypt`)
-- File uploads (`multer`)
-- Environment variables (`dotenv`)
+- **Runtime:** Node.js (ES Modules)
+- **Web framework:** Express 5
+- **Database:** SQLite with `better-sqlite3`
+- **Authentication:** JWT (`jsonwebtoken`)
+- **Password security:** `bcrypt`
+- **File upload:** `multer`
+- **Environment config:** `dotenv`
+- **Dev tooling:** `nodemon`
 
-## Prerequisites
+## Run locally
 
+### Prerequisites
 - Node.js 18+ (Node 22 recommended)
 
-## Local setup
+### Setup
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create `.env` from `.env.example` and set:
+   ```env
+   PORT=3000
+   JWT_SECRET=your-very-long-random-secret
+   ```
+3. Start the app:
+   ```bash
+   npm start
+   ```
+4. Development mode (auto-restart):
+   ```bash
+   npx nodemon server.js
+   ```
 
-### 1) Install dependencies
-
-```bash
-npm install
-```
-
-### 2) Configure environment
-
-Copy example config:
-
-```bash
-cp .env.example .env
-```
-
-Then update `.env`:
-
-```env
-PORT=3000
-JWT_SECRET=your-very-long-random-secret
-```
-
-### 3) Database and schema
-
-Database file: `database.db` (project root).  
-Schema migrations for room columns (`description`, `location`, `image`) are handled in `createTable.js`.
-
-### 4) (Optional) Seed test data
-
-```bash
-node test_data/seedUsers.js
-node test_data/seedRooms.js
-node test_data/seedPromoCodes.js
-node test_data/seedBookings.js
-```
-
-### 5) Run app
-
-```bash
-npm start
-```
-
-Development mode:
-
-```bash
-npx nodemon server.js
-```
-
-Open: [http://localhost:3000](http://localhost:3000)
-
-## Core pages
-
-- Student rooms: `/html/rooms_student_view.html`
-- Staff rooms: `/html/rooms_staff_view.html`
-- Staff create room: `/html/create_room_staff.html`
-
-## Health check
-
-- `GET /health`  
-Returns service status JSON.
-
-## Authentication
-
-Use login/register endpoints, then pass token:
-
-`Authorization: Bearer <token>`
-
-Token payload includes:
-
-- `id` / `userId`
-- `role` (`student` or `staff`)
-
-## API quick overview
-
-### Auth
-
-- `POST /api/auth/registerUser`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-- `GET /api/auth/all-users` (staff)
-
-### Rooms
-
-- `GET /api/rooms/launched` (public)
-- `GET /api/rooms/draft` (staff)
-- `POST /api/rooms/upload-image` (staff, multipart form-data `image`)
-- `POST /api/rooms/create-room` (staff)
-- `PUT /api/rooms/update-room/:roomId` (staff)
-- `DELETE /api/rooms/delete-room/:roomId` (staff)
-
-### Booking
-
-- `GET /api/booking/unavailable-slots/:roomName` (student or staff)
-- `POST /api/booking/create-booking` (student or staff)
-- `GET /api/booking` (student)
-- `PUT /api/booking/cancel-booking/:bookingId` (student)
-- `PUT /api/booking/cancel-booking-group/:bookingGroupId` (student)
-
-### Promo codes
-
-- `GET /api/promo-codes`
-- `POST /api/promo-codes/create-promo-code`
-- `PUT /api/promo-codes/update-promo-code/:promoCodeId`
-- `DELETE /api/promo-codes/delete-promo-code/:promoCodeId`
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Project structure
 
-- `server.js` - app entry point, route mounting, static hosting
-- `createTable.js` - DB connection and lightweight schema migration
-- `controllers/` - business logic and SQL operations
-- `routers/` - API route registration
-- `middleware/` - auth and role guards
-- `public/` - frontend HTML/CSS/JS and uploaded room images
-- `test_data/` - optional seed scripts
-- `DEPLOYMENT.md` - deployment guide for VPS sharing
-- `deploy.sh` - quick redeploy script (PM2-based)
-
-## Deploy for teammate sharing
-
-Use the instructions in `DEPLOYMENT.md`.  
-Recommended: VPS + PM2 + Nginx, so teammates can access one shared URL and one shared `database.db`.
+- `server.js` - app entry point and route mounting
+- `createTable.js` - database setup and schema updates
+- `routers/` - API endpoints
+- `controllers/` - application logic and database operations
+- `middleware/` - auth and role checks
+- `public/` - frontend pages/assets and uploaded room images
+- `test_data/` - optional data seeding scripts
 
 ## License
 
