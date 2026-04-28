@@ -24,10 +24,6 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ ok: true, service: "uow-room-booking-system" });
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
